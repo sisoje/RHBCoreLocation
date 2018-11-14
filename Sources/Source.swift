@@ -23,14 +23,13 @@ public class LocationBlocks {
 
     #if os(iOS) || os(macOS)
     public var didFinishDeferredUpdatesWithError:((Error?)->Void)?
-    #endif
-
     public var didDetermineState:[CLRegionState:(CLRegion)->Void] = [:]
     public var didRegionEvent:[RegionEvent:(CLRegion)->Void] = [:]
     public var monitoringDidFailForRegion:((CLRegion?, Error)->Void)?
     public var didUpdateLocations:(([CLLocation])->Void)?
     public var didChangeAuthorization:[CLAuthorizationStatus:()->Void] = [:]
     public var didFailWithError:((Error)->Void)?
+    #endif
 }
 
 public class LocationActions {
@@ -55,41 +54,33 @@ class LocationManagerDelegateWithBlocks: NSObject, CLLocationManagerDelegate {
         self.blocks = blocks
     }
 
+    #if os(iOS) || os(macOS)
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         blocks.didFailWithError?(error)
     }
-
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        blocks.didUpdateLocations?(locations)
-    }
-
-    func locationManager(_ manager: CLLocationManager, didDetermineState state: CLRegionState, for region: CLRegion) {
-        blocks.didDetermineState[state]?(region)
-    }
-
-    func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
-        blocks.didRegionEvent[.enter]?(region)
-    }
-
-    func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
-        blocks.didRegionEvent[.exit]?(region)
-    }
-
-    func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
-        blocks.monitoringDidFailForRegion?(region, error)
-    }
-
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         blocks.didChangeAuthorization[status]?()
     }
-
     func locationManager(_ manager: CLLocationManager, didStartMonitoringFor region: CLRegion) {
         blocks.didRegionEvent[.startMonitoring]?(region)
     }
-
-    #if os(iOS) || os(macOS)
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        blocks.didUpdateLocations?(locations)
+    }
+    func locationManager(_ manager: CLLocationManager, didDetermineState state: CLRegionState, for region: CLRegion) {
+        blocks.didDetermineState[state]?(region)
+    }
     func locationManager(_ manager: CLLocationManager, didFinishDeferredUpdatesWithError error: Error?) {
         blocks.didFinishDeferredUpdatesWithError?(error)
+    }
+    func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
+        blocks.didRegionEvent[.enter]?(region)
+    }
+    func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
+        blocks.didRegionEvent[.exit]?(region)
+    }
+    func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
+        blocks.monitoringDidFailForRegion?(region, error)
     }
     #endif
 
