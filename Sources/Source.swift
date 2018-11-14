@@ -15,6 +15,13 @@ public class LocationBlocks {
     #if os(iOS)
     public var didRangeBeacons:(([CLBeacon],CLBeaconRegion)->Void)?
     public var didVisit:((CLVisit)->Void)?
+    public var rangingBeaconsDidFailForRegion:((CLBeaconRegion, Error)->Void)?
+    public var shouldDisplayHeadingCalibration:(()->Bool)?
+    #endif
+
+    #if os(iOS) || os(macOS)
+    public var didFinishDeferredUpdatesWithError:((Error?)->Void)?
+    public var didUpdateHeading:((CLHeading)->Void)?
     #endif
 
     public var didDetermineState:[CLRegionState:(CLRegion)->Void] = [:]
@@ -24,10 +31,6 @@ public class LocationBlocks {
     public var didLocationUpdate:[LocationUpdate:()->Void] = [:]
     public var didChangeAuthorization:[CLAuthorizationStatus:()->Void] = [:]
     public var didFailWithError:((Error)->Void)?
-    public var didUpdateHeading:((CLHeading)->Void)?
-    public var rangingBeaconsDidFailForRegion:((CLBeaconRegion, Error)->Void)?
-    public var didFinishDeferredUpdatesWithError:((Error?)->Void)?
-    public var shouldDisplayHeadingCalibration:(()->Bool)?
 }
 
 public class LocationActions {
@@ -60,24 +63,12 @@ class LocationManagerDelegateWithBlocks: NSObject, CLLocationManagerDelegate {
         blocks.didUpdateLocations?(locations)
     }
 
-    func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
-        blocks.didUpdateHeading?(newHeading)
-    }
-
     func locationManagerShouldDisplayHeadingCalibration(_ manager: CLLocationManager) -> Bool {
         return blocks.shouldDisplayHeadingCalibration?() ?? false
     }
 
     func locationManager(_ manager: CLLocationManager, didDetermineState state: CLRegionState, for region: CLRegion) {
         blocks.didDetermineState[state]?(region)
-    }
-
-    func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
-        blocks.didRangeBeacons?(beacons, region)
-    }
-
-    func locationManager(_ manager: CLLocationManager, rangingBeaconsDidFailFor region: CLBeaconRegion, withError error: Error) {
-        blocks.rangingBeaconsDidFailForRegion?(region, error)
     }
 
     func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
@@ -108,14 +99,25 @@ class LocationManagerDelegateWithBlocks: NSObject, CLLocationManagerDelegate {
         blocks.didLocationUpdate[.resume]?()
     }
 
-    @available(iOS 6.0, macOS 10.9, *)
+    #if os(iOS) || os(macOS)
     func locationManager(_ manager: CLLocationManager, didFinishDeferredUpdatesWithError error: Error?) {
         blocks.didFinishDeferredUpdatesWithError?(error)
     }
+    func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
+        blocks.didUpdateHeading?(newHeading)
+    }
+    #endif
 
-    @available(iOS 8.0, *)
+    #if os(iOS)
     func locationManager(_ manager: CLLocationManager, didVisit visit: CLVisit) {
         blocks.didVisit?(visit)
     }
+    func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
+        blocks.didRangeBeacons?(beacons, region)
+    }
+    func locationManager(_ manager: CLLocationManager, rangingBeaconsDidFailFor region: CLBeaconRegion, withError error: Error) {
+        blocks.rangingBeaconsDidFailForRegion?(region, error)
+    }
+    #endif
 }
 
