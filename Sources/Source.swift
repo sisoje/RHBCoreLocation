@@ -63,10 +63,6 @@ class LocationManagerDelegateWithBlocks: NSObject, CLLocationManagerDelegate {
         blocks.didUpdateLocations?(locations)
     }
 
-    func locationManagerShouldDisplayHeadingCalibration(_ manager: CLLocationManager) -> Bool {
-        return blocks.shouldDisplayHeadingCalibration?() ?? false
-    }
-
     func locationManager(_ manager: CLLocationManager, didDetermineState state: CLRegionState, for region: CLRegion) {
         blocks.didDetermineState[state]?(region)
     }
@@ -117,6 +113,9 @@ class LocationManagerDelegateWithBlocks: NSObject, CLLocationManagerDelegate {
     }
     func locationManager(_ manager: CLLocationManager, rangingBeaconsDidFailFor region: CLBeaconRegion, withError error: Error) {
         blocks.rangingBeaconsDidFailForRegion?(region, error)
+    }
+    func locationManagerShouldDisplayHeadingCalibration(_ manager: CLLocationManager) -> Bool {
+        return blocks.shouldDisplayHeadingCalibration?() ?? false
     }
     #endif
 }
