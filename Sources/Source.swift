@@ -13,6 +13,7 @@ public enum LocationUpdate {
 
 public class LocationBlocks {
     #if os(iOS)
+    public var didUpdateHeading:((CLHeading)->Void)?
     public var didRangeBeacons:(([CLBeacon],CLBeaconRegion)->Void)?
     public var didVisit:((CLVisit)->Void)?
     public var rangingBeaconsDidFailForRegion:((CLBeaconRegion, Error)->Void)?
@@ -22,7 +23,6 @@ public class LocationBlocks {
 
     #if os(iOS) || os(macOS)
     public var didFinishDeferredUpdatesWithError:((Error?)->Void)?
-    public var didUpdateHeading:((CLHeading)->Void)?
     #endif
 
     public var didDetermineState:[CLRegionState:(CLRegion)->Void] = [:]
@@ -91,12 +91,12 @@ class LocationManagerDelegateWithBlocks: NSObject, CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didFinishDeferredUpdatesWithError error: Error?) {
         blocks.didFinishDeferredUpdatesWithError?(error)
     }
-    func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
-        blocks.didUpdateHeading?(newHeading)
-    }
     #endif
 
     #if os(iOS)
+    func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
+        blocks.didUpdateHeading?(newHeading)
+    }
     func locationManagerDidPauseLocationUpdates(_ manager: CLLocationManager) {
         blocks.didLocationUpdate[.pause]?()
     }
