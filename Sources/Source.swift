@@ -12,16 +12,6 @@ public enum LocationUpdate {
 }
 
 public class LocationBlocks {
-    #if os(iOS)
-    public var didUpdateHeading:((CLHeading)->Void)?
-    public var didRangeBeacons:(([CLBeacon],CLBeaconRegion)->Void)?
-    public var didVisit:((CLVisit)->Void)?
-    public var rangingBeaconsDidFailForRegion:((CLBeaconRegion, Error)->Void)?
-    public var shouldDisplayHeadingCalibration:(()->Bool)?
-    public var didLocationUpdate:[LocationUpdate:()->Void] = [:]
-    #endif
-
-    #if os(iOS) || os(macOS)
     public var didFinishDeferredUpdatesWithError:((Error?)->Void)?
     public var didDetermineState:[CLRegionState:(CLRegion)->Void] = [:]
     public var didRegionEvent:[RegionEvent:(CLRegion)->Void] = [:]
@@ -29,6 +19,14 @@ public class LocationBlocks {
     public var didUpdateLocations:(([CLLocation])->Void)?
     public var didChangeAuthorization:[CLAuthorizationStatus:()->Void] = [:]
     public var didFailWithError:((Error)->Void)?
+
+    #if os(iOS)
+    public var didUpdateHeading:((CLHeading)->Void)?
+    public var didRangeBeacons:(([CLBeacon],CLBeaconRegion)->Void)?
+    public var didVisit:((CLVisit)->Void)?
+    public var rangingBeaconsDidFailForRegion:((CLBeaconRegion, Error)->Void)?
+    public var shouldDisplayHeadingCalibration:(()->Bool)?
+    public var didLocationUpdate:[LocationUpdate:()->Void] = [:]
     #endif
 }
 
@@ -54,7 +52,6 @@ class LocationManagerDelegateWithBlocks: NSObject, CLLocationManagerDelegate {
         self.blocks = blocks
     }
 
-    #if os(iOS) || os(macOS)
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         blocks.didFailWithError?(error)
     }
@@ -82,7 +79,6 @@ class LocationManagerDelegateWithBlocks: NSObject, CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
         blocks.monitoringDidFailForRegion?(region, error)
     }
-    #endif
 
     #if os(iOS)
     func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
