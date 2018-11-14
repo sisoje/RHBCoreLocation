@@ -12,6 +12,11 @@ public enum LocationUpdate {
 }
 
 public class LocationBlocks {
+    #if os(iOS)
+    public var didRangeBeacons:(([CLBeacon],CLBeaconRegion)->Void)?
+    public var didVisit:((CLVisit)->Void)?
+    #endif
+
     public var didDetermineState:[CLRegionState:(CLRegion)->Void] = [:]
     public var didRegionEvent:[RegionEvent:(CLRegion)->Void] = [:]
     public var monitoringDidFailForRegion:((CLRegion?, Error)->Void)?
@@ -20,10 +25,8 @@ public class LocationBlocks {
     public var didChangeAuthorization:[CLAuthorizationStatus:()->Void] = [:]
     public var didFailWithError:((Error)->Void)?
     public var didUpdateHeading:((CLHeading)->Void)?
-    public var didRangeBeacons:(([CLBeacon],CLBeaconRegion)->Void)?
     public var rangingBeaconsDidFailForRegion:((CLBeaconRegion, Error)->Void)?
     public var didFinishDeferredUpdatesWithError:((Error?)->Void)?
-    public var didVisit:((CLVisit)->Void)?
     public var shouldDisplayHeadingCalibration:(()->Bool)?
 }
 
@@ -105,10 +108,12 @@ class LocationManagerDelegateWithBlocks: NSObject, CLLocationManagerDelegate {
         blocks.didLocationUpdate[.resume]?()
     }
 
+    @available(iOS 6.0, macOS 10.9, *)
     func locationManager(_ manager: CLLocationManager, didFinishDeferredUpdatesWithError error: Error?) {
         blocks.didFinishDeferredUpdatesWithError?(error)
     }
 
+    @available(iOS 8.0, *)
     func locationManager(_ manager: CLLocationManager, didVisit visit: CLVisit) {
         blocks.didVisit?(visit)
     }
