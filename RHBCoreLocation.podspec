@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name             = 'RHBCoreLocation'
-    s.version          = '1.0.0'
+    s.version          = '1.1.0'
     s.summary          = 'Enables swift package and pod togehter.'
 
     s.description      = <<-DESC
