@@ -1,10 +1,10 @@
 Pod::Spec.new do |s|
     s.name             = 'RHBCoreLocation'
     s.version          = '1.1.0'
-    s.summary          = 'Enables swift package and pod togehter.'
+    s.summary          = 'CoreLocation utilities.'
 
     s.description      = <<-DESC
-    RHBCoreLocation provides template for SPM and COCOAPOD.
+    RHBCoreLocation provides CoreLocation utilities.
                        DESC
 
     s.homepage         = "https://github.com/sisoje/#{s.name}"
