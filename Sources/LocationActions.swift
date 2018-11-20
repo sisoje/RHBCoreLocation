@@ -1,15 +1,17 @@
 import CoreLocation
 
 public class LocationActions {
-    public let blocks = LocationBlocks()
-    weak var manager: CLLocationManager?
-    lazy var delegate: CLLocationManagerDelegate = LocationManagerDelegateWithBlocks(blocks)
-
-    public init(_ manager: CLLocationManager) {
-        self.manager = manager
-        manager.delegate = delegate
+    public init() {
+        delegate = LocationManagerDelegateWithBlocks(blocks)
     }
-
+    public let blocks = LocationBlocks()
+    public weak var manager: CLLocationManager? {
+        didSet {
+            oldValue?.delegate = nil
+            manager?.delegate = delegate
+        }
+    }
+    let delegate: CLLocationManagerDelegate
     deinit {
         manager?.delegate = nil
     }
