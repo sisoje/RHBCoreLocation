@@ -6,9 +6,9 @@
 //  Copyright © 2018 CocoaPods. All rights reserved.
 //
 
-import XCTest
-import RHBCoreLocation
 import CoreLocation
+import RHBCoreLocation
+import XCTest
 
 class CoreLocationTests: XCTestCase {
     func testAuthorization() {
@@ -21,9 +21,9 @@ class CoreLocationTests: XCTestCase {
             ex.fulfill()
         }
         #if !os(macOS)
-        actions.blocks.didChangeAuthorization[.authorizedWhenInUse] = {
-            ex.fulfill()
-        }
+            actions.blocks.didChangeAuthorization[.authorizedWhenInUse] = {
+                ex.fulfill()
+            }
         #endif
         actions.blocks.didChangeAuthorization[.denied] = {
             ex.fulfill()
@@ -35,9 +35,9 @@ class CoreLocationTests: XCTestCase {
             ex.fulfill()
         }
         #if os(macOS)
-        actions.blocks.didChangeAuthorization[.authorized] = {
-            ex.fulfill()
-        }
+            actions.blocks.didChangeAuthorization[.authorized] = {
+                ex.fulfill()
+            }
         #endif
 
         waitForExpectations(timeout: 5, handler: nil)
