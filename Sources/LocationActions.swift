@@ -1,11 +1,6 @@
 import CoreLocation
 
 public class LocationActions {
-    public init() {
-        delegate = LocationManagerDelegateWithBlocks(blocks)
-    }
-
-    public let blocks = LocationBlocks()
     public weak var manager: CLLocationManager? {
         didSet {
             oldValue?.delegate = nil
@@ -13,18 +8,24 @@ public class LocationActions {
         }
     }
 
-    let delegate: CLLocationManagerDelegate
+    let delegate = LocationManagerDelegateWithBlocks()
+
+    public init(_ manager: CLLocationManager) {
+        manager.delegate = delegate
+        self.manager = manager
+    }
+
+    public var blocks: LocationBlocks {
+        return delegate.blocks
+    }
+
     deinit {
         manager?.delegate = nil
     }
 }
 
 class LocationManagerDelegateWithBlocks: NSObject, CLLocationManagerDelegate {
-    let blocks: LocationBlocks
-
-    init(_ blocks: LocationBlocks) {
-        self.blocks = blocks
-    }
+    let blocks = LocationBlocks()
 
     func locationManager(_: CLLocationManager, didFailWithError error: Error) {
         blocks.didFailWithError?(error)

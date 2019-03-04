@@ -15,8 +15,7 @@ class CoreLocationTests: XCTestCase {
         let ex = expectation(description: "testAuthorization")
 
         let manager = CLLocationManager()
-        let actions = LocationActions()
-        actions.manager = manager
+        let actions = LocationActions(manager)
         actions.blocks.didChangeAuthorization[.authorizedAlways] = {
             ex.fulfill()
         }
